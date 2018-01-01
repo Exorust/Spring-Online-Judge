@@ -26,12 +26,14 @@ import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.model.Specialty;
+import org.springframework.samples.petclinic.model.TestCase;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repository.OwnerRepository;
 import org.springframework.samples.petclinic.repository.PetRepository;
 import org.springframework.samples.petclinic.repository.PetTypeRepository;
 import org.springframework.samples.petclinic.repository.SpecialtyRepository;
+import org.springframework.samples.petclinic.repository.TestCaseRepository;
 import org.springframework.samples.petclinic.repository.VetRepository;
 import org.springframework.samples.petclinic.repository.VisitRepository;
 import org.springframework.stereotype.Service;
@@ -54,6 +56,7 @@ public class ClinicServiceImpl implements ClinicService {
     private VisitRepository visitRepository;
     private SpecialtyRepository specialtyRepository;
 	private PetTypeRepository petTypeRepository;
+	private TestCaseRepository testCaseRepository;
 
     @Autowired
      public ClinicServiceImpl(
@@ -62,14 +65,53 @@ public class ClinicServiceImpl implements ClinicService {
     		 OwnerRepository ownerRepository,
     		 VisitRepository visitRepository,
     		 SpecialtyRepository specialtyRepository,
-			 PetTypeRepository petTypeRepository) {
+			 PetTypeRepository petTypeRepository,
+			 TestCaseRepository testCaseRepository) {
         this.petRepository = petRepository;
         this.vetRepository = vetRepository;
         this.ownerRepository = ownerRepository;
         this.visitRepository = visitRepository;
         this.specialtyRepository = specialtyRepository; 
 		this.petTypeRepository = petTypeRepository;
+		this.testCaseRepository = testCaseRepository;
+
     }
+    
+    
+    @Override
+	public Collection<TestCase> findTestCaseByInput(String input) throws DataAccessException {
+    	return testCaseRepository.findByInput(input);
+    }
+
+    @Override
+	public Collection<TestCase> findTestCaseByOutput(String output) throws DataAccessException {
+    	return testCaseRepository.findByInput(output);
+    }
+    
+	@Override
+	@Transactional
+	public void saveTestCase(TestCase testCase) throws DataAccessException {
+		testCaseRepository.save(testCase);
+	}
+
+	@Override
+	@Transactional
+	public void deleteTestCase(TestCase testCase) throws DataAccessException {
+		testCaseRepository.delete(testCase);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public TestCase findTestCaseById(int id) throws DataAccessException {
+		TestCase testCase = null;
+		try {
+			testCase = testCaseRepository.findById(id);
+		} catch (ObjectRetrievalFailureException|EmptyResultDataAccessException e) {
+		// just ignore not found exceptions for Jdbc/Jpa realization
+			return null;
+		}
+		return testCase;
+	}
 
 	@Override
 	@Transactional(readOnly = true)

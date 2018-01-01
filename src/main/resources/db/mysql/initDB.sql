@@ -8,6 +8,14 @@ GRANT ALL PRIVILEGES ON petclinic.* TO pc@localhost IDENTIFIED BY 'pc';
 
 USE petclinic;
 
+CREATE TABLE IF NOT EXISTS testcase (
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  input VARCHAR(1024),
+  output VARCHAR(1024),
+  INDEX(input),
+  INDEX(output)
+) engine=InnoDB;
+
 CREATE TABLE IF NOT EXISTS vets (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   first_name VARCHAR(30),

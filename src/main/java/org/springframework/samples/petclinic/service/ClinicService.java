@@ -22,6 +22,7 @@ import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.model.Specialty;
+import org.springframework.samples.petclinic.model.TestCase;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
 
@@ -33,7 +34,12 @@ import org.springframework.samples.petclinic.model.Visit;
  * @author Vitaliy Fedoriv
  */
 public interface ClinicService {
-
+	
+	Collection<TestCase> findTestCaseByInput(String input) throws DataAccessException;
+	Collection<TestCase> findTestCaseByOutput(String output) throws DataAccessException;
+	void saveTestCase(TestCase testCase);
+	void deleteTestCase(TestCase testCase);
+	
 	Pet findPetById(int id) throws DataAccessException;
 	Collection<Pet> findAllPets() throws DataAccessException;
 	void savePet(Pet pet) throws DataAccessException;
@@ -67,5 +73,7 @@ public interface ClinicService {
 	Collection<Specialty> findAllSpecialties() throws DataAccessException;
 	void saveSpecialty(Specialty specialty) throws DataAccessException;
 	void deleteSpecialty(Specialty specialty) throws DataAccessException;
+	TestCase findTestCaseById(int id) throws DataAccessException;
+	
 
 }
