@@ -21,6 +21,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
+import org.springframework.samples.petclinic.model.Question;
 import org.springframework.samples.petclinic.model.Specialty;
 import org.springframework.samples.petclinic.model.TestCase;
 import org.springframework.samples.petclinic.model.Vet;
@@ -35,10 +36,18 @@ import org.springframework.samples.petclinic.model.Visit;
  */
 public interface ClinicService {
 	
+	Question findQuestionById(int id) throws DataAccessException;
+	void saveQuestion(Question question) throws DataAccessException;
+	Collection<Question> findAllQuestions() throws DataAccessException;
+	void deleteQuestion(Question question) throws DataAccessException;
+
 	Collection<TestCase> findTestCaseByInput(String input) throws DataAccessException;
 	Collection<TestCase> findTestCaseByOutput(String output) throws DataAccessException;
-	void saveTestCase(TestCase testCase);
-	void deleteTestCase(TestCase testCase);
+	void saveTestCase(TestCase testCase) throws DataAccessException;
+	void deleteTestCase(TestCase testCase) throws DataAccessException;
+	
+	
+	
 	
 	Pet findPetById(int id) throws DataAccessException;
 	Collection<Pet> findAllPets() throws DataAccessException;

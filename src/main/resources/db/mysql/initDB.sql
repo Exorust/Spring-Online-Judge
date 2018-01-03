@@ -8,10 +8,17 @@ GRANT ALL PRIVILEGES ON petclinic.* TO pc@localhost IDENTIFIED BY 'pc';
 
 USE petclinic;
 
+CREATE TABLE IF NOT EXISTS questions(
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  question_string VARCHAR(1024)
+) engine=InnoDB;
+
 CREATE TABLE IF NOT EXISTS testcase (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   input VARCHAR(1024),
   output VARCHAR(1024),
+  question_id INT(4) UNSIGNED NOT NULL,
+  FOREIGN KEY (question_id) REFERENCES questions(id),
   INDEX(input),
   INDEX(output)
 ) engine=InnoDB;

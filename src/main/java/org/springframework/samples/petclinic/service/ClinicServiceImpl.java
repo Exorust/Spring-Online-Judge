@@ -25,6 +25,7 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
+import org.springframework.samples.petclinic.model.Question;
 import org.springframework.samples.petclinic.model.Specialty;
 import org.springframework.samples.petclinic.model.TestCase;
 import org.springframework.samples.petclinic.model.Vet;
@@ -32,6 +33,7 @@ import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repository.OwnerRepository;
 import org.springframework.samples.petclinic.repository.PetRepository;
 import org.springframework.samples.petclinic.repository.PetTypeRepository;
+import org.springframework.samples.petclinic.repository.QuestionRepository;
 import org.springframework.samples.petclinic.repository.SpecialtyRepository;
 import org.springframework.samples.petclinic.repository.TestCaseRepository;
 import org.springframework.samples.petclinic.repository.VetRepository;
@@ -47,7 +49,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Vitaliy Fedoriv
  */
 @Service
-
 public class ClinicServiceImpl implements ClinicService {
 
     private PetRepository petRepository;
@@ -57,6 +58,7 @@ public class ClinicServiceImpl implements ClinicService {
     private SpecialtyRepository specialtyRepository;
 	private PetTypeRepository petTypeRepository;
 	private TestCaseRepository testCaseRepository;
+	private QuestionRepository questionRepository;
 
     @Autowired
      public ClinicServiceImpl(
@@ -65,6 +67,7 @@ public class ClinicServiceImpl implements ClinicService {
     		 OwnerRepository ownerRepository,
     		 VisitRepository visitRepository,
     		 SpecialtyRepository specialtyRepository,
+			 QuestionRepository questionRepository,
 			 PetTypeRepository petTypeRepository,
 			 TestCaseRepository testCaseRepository) {
         this.petRepository = petRepository;
@@ -73,9 +76,32 @@ public class ClinicServiceImpl implements ClinicService {
         this.visitRepository = visitRepository;
         this.specialtyRepository = specialtyRepository; 
 		this.petTypeRepository = petTypeRepository;
+		this.questionRepository = questionRepository;
 		this.testCaseRepository = testCaseRepository;
-
+		
     }
+    
+    @Override
+	public Question findQuestionById(int id) throws DataAccessException {
+		return questionRepository.findById(id);
+	}
+    
+    @Override
+    @Transactional
+	public void saveQuestion(Question question) throws DataAccessException {
+		questionRepository.save(question);
+	}
+    
+    @Override
+	public Collection<Question> findAllQuestions() throws DataAccessException {
+		return questionRepository.findAll();
+	}
+    
+    @Override
+    @Transactional
+	public void deleteQuestion(Question question) throws DataAccessException {
+		questionRepository.delete(question);
+	}
     
     
     @Override
@@ -99,6 +125,11 @@ public class ClinicServiceImpl implements ClinicService {
 	public void deleteTestCase(TestCase testCase) throws DataAccessException {
 		testCaseRepository.delete(testCase);
 	}
+	
+	
+	
+	//Their code
+	
 	
 	@Override
 	@Transactional(readOnly = true)

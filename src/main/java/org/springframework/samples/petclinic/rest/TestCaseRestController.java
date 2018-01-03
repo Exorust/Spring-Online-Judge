@@ -10,7 +10,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.samples.petclinic.model.Question;
 import org.springframework.samples.petclinic.model.TestCase;
+import org.springframework.samples.petclinic.rest.dto.TestCaseDTO;
+import org.springframework.samples.petclinic.rest.dtoconvert.TestCaseDTOConvert;
 import org.springframework.samples.petclinic.service.ClinicService;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +35,7 @@ public class TestCaseRestController {
 		if (input == null) {
 			input = "";
 		}
+		
 		Collection<TestCase> testcases = this.clinicService.findTestCaseByInput(input);
 		if (testcases.isEmpty()) {
 			return new ResponseEntity<Collection<TestCase>>(HttpStatus.NOT_FOUND);
@@ -56,18 +60,20 @@ public class TestCaseRestController {
 	}
 	
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<TestCase> addTestCase(@RequestBody @Valid TestCase testCase, BindingResult bindingResult,
+	public ResponseEntity<TestCaseDTO> addTestCase(@RequestBody @Valid TestCaseDTO testCaseDTO, BindingResult bindingResult,
 			UriComponentsBuilder ucBuilder) {
 		BindingErrorsResponse errors = new BindingErrorsResponse();
 		HttpHeaders headers = new HttpHeaders();
-		if (bindingResult.hasErrors() || (testCase == null)) {
+		if (bindingResult.hasErrors() || (testCaseDTO == null)) {
 			errors.addAllErrors(bindingResult);
 			headers.add("errors", errors.toJSON());
-			return new ResponseEntity<TestCase>(headers, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<TestCaseDTO>(headers, HttpStatus.BAD_REQUEST);
 		}
+		TestCaseDTOConvert testCaseDTOConvert = new TestCaseDTOConvert();
+		TestCase testCase = testCaseDTOConvert.testCaseDTOToTestCase(testCaseDTO);
 		this.clinicService.saveTestCase(testCase);
 		headers.setLocation(ucBuilder.path("/api/testcases/{id}").buildAndExpand(testCase.getId()).toUri());
-		return new ResponseEntity<TestCase>(testCase, headers, HttpStatus.CREATED);
+		return new ResponseEntity<TestCaseDTO>(testCaseDTO, headers, HttpStatus.CREATED);
 	}
 	
 	@RequestMapping(value = "/{testCaseId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -82,22 +88,20 @@ public class TestCaseRestController {
 	}
 	
 	@RequestMapping(value = "/{testCaseId}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<TestCase> updateTestCase(@PathVariable("testCaseId") int testCaseId, @RequestBody @Valid TestCase testCase,
+	public ResponseEntity<TestCase> updateTestCase(@PathVariable("testCaseId") int testCaseId, @RequestBody @Valid TestCaseDTO testCaseDTO,
 			BindingResult bindingResult, UriComponentsBuilder ucBuilder) {
 		BindingErrorsResponse errors = new BindingErrorsResponse();
 		HttpHeaders headers = new HttpHeaders();
-		if (bindingResult.hasErrors() || (testCase == null)) {
+		if (bindingResult.hasErrors() || (testCaseDTO == null)) {
 			errors.addAllErrors(bindingResult);
 			headers.add("errors", errors.toJSON());
 			return new ResponseEntity<TestCase>(headers, HttpStatus.BAD_REQUEST);
 		}
-		TestCase currentTestCase = this.clinicService.findTestCaseById(testCaseId);
+		TestCaseDTOConvert testCaseDTOConvert = new TestCaseDTOConvert();
+		TestCase currentTestCase = testCaseDTOConvert.testCaseDTOToTestCase(testCaseDTO);
 		if (currentTestCase == null) {
 			return new ResponseEntity<TestCase>(HttpStatus.NOT_FOUND);
 		}
-		currentTestCase.setInput(testCase.getInput());
-		currentTestCase.setOutput(testCase.getOutput());
-
 		this.clinicService.saveTestCase(currentTestCase);
 		return new ResponseEntity<TestCase>(currentTestCase, HttpStatus.NO_CONTENT);
 	}
